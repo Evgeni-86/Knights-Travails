@@ -13,15 +13,15 @@ class StartPoint {
         let rez = []
         let counter = 0
         while (stack.length || rez.length == 0) {
+
             let cur = stack.shift()
-            counter++
             if (cur.coordinates[0]==end_coordinates[0] 
                             && cur.coordinates[1]==end_coordinates[1]) {
                 rez.push(cur)
                 break
             }
 
-        for (let key in cur) {
+            for (let key in cur) {
             if(key.includes("motion")) {
                 let x_point_end = end_coordinates[0]
                 let y_point_end = end_coordinates[1]
@@ -36,12 +36,22 @@ class StartPoint {
                 let new_node = new Node([x_point_new,y_point_new], motion, max)
                 new_node.parant = cur
                 new_node.length = new_end_length
+                //записываем в начало очереди если только вектор растояния меньше!
+                //если равен то записываем в конец(чтобы не крутиться у одной точки)
                 if (new_end_length < cur_end_length) { stack.unshift(new_node) }
                 else { stack.push(new_node) }
             }
-        }  
-
         }
+        stack.length = motion.length * 2
+        //сортировка первой половины очереди по растоянию(фильтр)
+        stack = stack.slice(0, motion.length).sort((a, b) => a.length < b.length ? -1 : 1).
+                                                concat(stack.slice(motion.length, stack.length))
+        counter++
+        console.log(cur)
+        console.table(stack)
+        console.log(counter)
+        }
+
         function RezultShow (elem, arr=[]) {
             while (elem.parant != null) {
                 let el = elem.coordinates
